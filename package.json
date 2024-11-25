@@ -1,6 +1,6 @@
 {
   "name": "create-tmagic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "license": "MIT",
   "author": "roymondchen",
@@ -10,7 +10,14 @@
   },
   "files": [
     "index.js",
-    "template-*",
+    "template-admin-client-ts",
+    "template-component-react-ts",
+    "template-component-vue-ts",
+    "template-components-ts",
+    "template-data-source-ts",
+    "template-plugin-ts",
+    "template-runtime-react-ts",
+    "template-runtime-vue-ts",
     "dist"
   ],
   "scripts": {
