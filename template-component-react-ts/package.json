@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "name": "component-react",
+  "type": "module",
+  "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@tmagic/schema": ">=1.5.0-beta.15",
+    "@tmagic/react-runtime-help": ">=0.0.3",
+    "react": ">=18.3.1",
+    "react-dom": ">=18.3.1",
+    "typescript": "*"
+  },
+  "peerDependenciesMeta": {
+    "@tmagic/schema": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
+  }
+}

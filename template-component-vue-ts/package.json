@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "name": "component-vue",
+  "type": "module",
+  "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "vue-demi": "^0.14.10"
+  },
+  "peerDependencies": {
+    "@tmagic/core": ">=1.5.0-beta.15",
+    "@tmagic/vue-runtime-help": ">=0.1.4",
+    "@vue/composition-api": ">=1.7.2",
+    "typescript": "*",
+    "vue": ">=2.6.0 || >=3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    },
+
+    "typescript": {
+      "optional": true
+    }
+  }
+}

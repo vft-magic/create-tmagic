@@ -1,0 +1,41 @@
+{
+  "name": "create-tmagic",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "author": "roymondchen",
+  "bin": {
+    "create-tmagic": "index.js",
+    "cva": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vft-magic/create-tmagic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vft-magic/create-tmagic/issues"
+  },
+  "devDependencies": {
+    "@types/minimist": "^1.2.5",
+    "@types/prompts": "^2.4.9",
+    "cross-spawn": "^7.0.3",
+    "minimist": "^1.2.8",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2",
+    "unbuild": "^3.0.0-rc.11"
+  }
+}
