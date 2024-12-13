@@ -1,8 +1,8 @@
 
 import React from 'react';
 
+import type { Id, MComponent } from '@tmagic/core';
 import { useApp } from '@tmagic/react-runtime-help';
-import type { Id, MComponent } from '@tmagic/schema';
 
 interface ComponentSchema extends Omit<MComponent, 'id'> {
   id?: Id;
