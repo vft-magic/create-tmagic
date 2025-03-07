@@ -45,11 +45,6 @@ const renderDom = () => {
       </AppContent.Provider>
     </React.StrictMode>,
   );
-
-  setTimeout(() => {
-    // @ts-ignore
-    window.magic.onPageElUpdate(document.querySelector('.magic-ui-page'));
-  });
 };
 
 Object.keys(components).forEach((type: string) => app.registerComponent(type, components[type]));
