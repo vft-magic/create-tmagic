@@ -10,8 +10,8 @@
     "node": ">=18"
   },
   "peerDependencies": {
-    "@tmagic/core": ">=1.5.0",
-    "@tmagic/react-runtime-help": ">=0.0.3",
+    "@tmagic/core": ">=1.6.0",
+    "@tmagic/react-runtime-help": ">=0.2.0",
     "react": ">=18.3.1",
     "react-dom": ">=18.3.1",
     "typescript": "*"

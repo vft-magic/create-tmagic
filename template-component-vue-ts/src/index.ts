@@ -1,7 +1,7 @@
-import Button from './index.vue';
+import Main from './Main.vue';
 
-export { default as config } from './formConfig';
-export { default as value } from './initValue';
+export { default as config } from './form-config';
+export { default as value } from './init-value';
 export { default as event } from './event';
 
-export default Button;
+export default Main;

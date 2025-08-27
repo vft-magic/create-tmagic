@@ -16,5 +16,6 @@ export default defineConfig({
   dynamicImport: true,
   npmConfig: {
     client: 'pnpm',
+    keepPackageJsonClean: true,
   },
 });

@@ -1,2 +1,5 @@
 .tmagic
+dist
 public/entry
+*.local
+*.local.*
