@@ -21,6 +21,14 @@ export default defineConfig({
     })
   ],
 
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
+
   resolve: {
     alias: [
       { find: /^react$/, replacement: path.join(__dirname, 'node_modules/react/index.js') },

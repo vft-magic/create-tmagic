@@ -7,7 +7,7 @@
     "tmagic": "tmagic entry",
     "dev": "vite --force",
     "serve": "vite preview",
-    "build": "rimraf ./dist && node scripts/build.mjs --type=all",
+    "build": "node scripts/build.mjs --type=all --init",
     "build:libs": "node scripts/build.mjs --type=res",
     "build:page": "node scripts/build.mjs --type=page",
     "build:playground": "node scripts/build.mjs --type=playground"

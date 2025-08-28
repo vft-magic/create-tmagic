@@ -12,6 +12,14 @@ export default defineConfig({
     })
   ],
 
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
+
   resolve: {
     alias: [
       { find: /^vue$/, replacement: path.join(__dirname, 'node_modules/vue') },

@@ -7,7 +7,7 @@
     "tmagic": "tmagic entry",
     "dev": "vite --force",
     "serve": "vite preview",
-    "build": "rimraf ./dist && node scripts/build.mjs --type=all",
+    "build": "node scripts/build.mjs --type=all --init",
     "build:libs": "node scripts/build.mjs --type=res",
     "build:page": "node scripts/build.mjs --type=page",
     "build:playground": "node scripts/build.mjs --type=playground"
@@ -29,7 +29,6 @@
     "@vue/tsconfig": "^0.8.1",
     "fs-extra": "^11.3.1",
     "minimist": "^1.2.8",
-    "rimraf": "^3.0.2",
     "rollup": "4.44.1",
     "rollup-plugin-external-globals": "^0.13.0",
     "sass": "^1.91.0",

@@ -1,5 +1,5 @@
 .tmagic
 dist
-public/entry
+playground/public/entry
 *.local
 *.local.*

@@ -8,13 +8,13 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 export default defineConfig({
   ...baseConfig,
 
-  publicDir: '../public',
+  publicDir: './public',
 
   base: `${baseConfig.base}/page`,
 
   build: {
-    emptyOutDir: false,
     sourcemap: true,
+    copyPublicDir: false,
     outDir: '../dist/page',
     rollupOptions: {
       output: {

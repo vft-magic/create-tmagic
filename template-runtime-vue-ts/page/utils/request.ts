@@ -1,5 +1,5 @@
-import { App } from 'vue';
-import axios, { AxiosResponse } from 'axios';
+import type { App } from 'vue';
+import axios, { type AxiosResponse } from 'axios';
 
 const requestHandler = function (config: Record<any, any>) {
   return config;

@@ -15,7 +15,7 @@ export default defineConfig((mode) => {
       sourcemap: true,
       minify: false,
       target: 'esnext',
-      outDir: `./dist/entry/${fileName}`,
+      outDir: `./playground/public/entry/${fileName}`,
 
       lib: {
         entry: `./.tmagic/${fileName}-entry.ts`,

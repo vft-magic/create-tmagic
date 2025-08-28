@@ -12,30 +12,13 @@ const args = minimist(process.argv.slice(2));
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-fse.removeSync(path.resolve(dirname, '../.tmagic'));
+if (args.init) {
+  fse.removeSync(path.resolve(dirname, '../.tmagic'));
 
-execSync('tmagic entry', {
-  stdio: 'inherit',
-  cwd: path.resolve(dirname, '../'),
-});
-
-if (args.type === 'res' || args.type === 'all') {
-  fse.removeSync(path.resolve(dirname, '../dist/entry'));
-  for (const mode of ['value', 'config', 'event', 'ds:value', 'ds:config', 'ds:event']) {
-    const fileName = mode.replace(':', '-');
-
-    buildVite({
-      root: path.resolve(dirname, '../'),
-      clearScreen: false,
-      configFile: false,
-      ...resViteConfig(mode),
-    }).then(() => {
-      fse.copySync(
-        path.resolve(dirname, '../dist/entry', fileName),
-        path.resolve(dirname, '../public/entry', fileName),
-      );
-    });
-  }
+  execSync('tmagic entry', {
+    stdio: 'inherit',
+    cwd: path.resolve(dirname, '../'),
+  });
 }
 
 const buildRuntime = (type) => {
@@ -45,7 +28,12 @@ const buildRuntime = (type) => {
     root: path.resolve(dirname, '../', type),
     clearScreen: false,
     configFile: path.resolve(dirname, '../', type, 'vite.config.ts'),
-  });
+  }).then(() => {
+    fse.copySync(
+      path.resolve(dirname, '../', type, 'public'),
+      path.resolve(dirname, '../dist/', type, 'public'),
+    );
+  })
 };
 
 if (args.type === 'page' || args.type === 'all') {
@@ -54,4 +42,16 @@ if (args.type === 'page' || args.type === 'all') {
 
 if (args.type === 'playground' || args.type === 'all') {
   buildRuntime('playground');
+}
+
+if (args.type === 'res' || args.type === 'all') {
+  fse.removeSync(path.resolve(dirname, '../dist/entry'));
+  for (const mode of ['value', 'config', 'event', 'ds:value', 'ds:config', 'ds:event']) {
+    buildVite({
+      root: path.resolve(dirname, '../'),
+      clearScreen: false,
+      configFile: false,
+      ...resViteConfig(mode),
+    });
+  }
 }
