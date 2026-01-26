@@ -5,9 +5,5 @@
   "private": true,
   "tmagicComponentsPath": "./components",
   "tmagicDataSourcesPath": "./dataSources",
-  "tmagicPluginsPath": "./plugins",
-  "devDependencies": {
-    "@vue/tsconfig": "^0.8.1",
-    "typescript": "^5.9.3"
-  }
+  "tmagicPluginsPath": "./plugins"
 }

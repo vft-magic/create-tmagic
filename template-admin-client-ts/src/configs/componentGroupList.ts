@@ -1,4 +1,4 @@
-import { Files, FolderOpened, Grid, PictureFilled, SwitchButton, Ticket, Tickets } from '@element-plus/icons-vue';
+import { Files, FolderOpened, Ticket } from '@element-plus/icons-vue';
 
 import type { ComponentGroup } from '@tmagic/editor';
 

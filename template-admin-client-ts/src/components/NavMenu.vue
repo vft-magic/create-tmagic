@@ -13,21 +13,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script lang="ts" setup>
+import { type MenuButton, TMagicButton, TMagicIcon } from '@tmagic/editor';
 
-import { MenuButton, TMagicButton, TMagicIcon } from '@tmagic/editor';
-
-export default defineComponent({
+defineOptions({
   name: 'nav-menu',
-  props: {
-    data: {
-      type: Array as PropType<MenuButton[]>,
-      default: () => [],
-    },
-  },
-  components: { TMagicIcon, TMagicButton },
 });
+
+defineProps<{
+  data: MenuButton[];
+}>();
 </script>
 
 <style lang="scss" scoped>

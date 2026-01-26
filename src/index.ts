@@ -45,8 +45,10 @@ Available templates:
 ${yellow    ('runtime-react-ts       运行时（DSL渲染）'            )}
 ${green     ('runtime-vue-ts         运行时（DSL渲染）'            )}
 ${cyan      ('admin-client-ts        管理端（编辑器）'             )}
-${cyan      ('components-ts          组件库(组件/插件/数据源)'     )}
-${redBright ('component-vue-ts       vue组件'                      )}
+${cyan      ('components-ts          组件库(组件/插件/数据源)(TypeScript)')}
+${cyan      ('components-js          组件库(组件/插件/数据源)(JavaScript)')}
+${redBright ('component-vue-ts       vue组件(TypeScript)'           )}
+${redBright ('component-vue-js       vue组件(JavaScript)'          )}
 ${red       ('component-react-ts     react组件'                    )}
 ${blue      ('data-source-ts         数据源'                       )}
 ${blueBright('plugin-ts              插件'                         )}`
@@ -102,8 +104,13 @@ const FRAMEWORKS: Framework[] = [
     variants: [
       {
         name: 'components-ts',
-        display: 'components-ts',
+        display: 'components-ts(TypeScript)',
         color: blue,
+      },
+      {
+        name: 'components-js',
+        display: 'components-js(JavaScript)',
+        color: green,
       },
     ],
   },
@@ -114,8 +121,13 @@ const FRAMEWORKS: Framework[] = [
     variants: [
       {
         name: 'component-vue-ts',
-        display: 'vue组件',
+        display: 'vue组件(TypeScript)',
         color: blue,
+      },
+      {
+        name: 'component-vue-js',
+        display: 'vue组件(JavaScript)',
+        color: green,
       },
       {
         name: 'component-react-ts',
@@ -159,6 +171,57 @@ const renameFiles: Record<string, string | undefined> = {
 }
 
 const defaultTargetDir = 'tmagic-project'
+
+// 覆盖选项
+const OVERWRITE_CHOICES = [
+  { title: 'Remove existing files and continue', value: 'yes' },
+  { title: 'Cancel operation', value: 'no' },
+  { title: 'Ignore files and continue', value: 'ignore' },
+]
+
+// framework 类型对应的 package.json 配置字段和默认文件夹
+const FRAMEWORK_PATH_CONFIG: Record<string, { pkgField: string; defaultDir: string }> = {
+  'component': { pkgField: 'tmagicComponentsPath', defaultDir: 'components' },
+  'data-source': { pkgField: 'tmagicDataSourcesPath', defaultDir: 'data-sources' },
+  'plugin': { pkgField: 'tmagicPluginsPath', defaultDir: 'plugins' },
+}
+
+/**
+ * 获取组件/数据源/插件的目标目录
+ * 1. 优先使用 package.json 中的对应配置字段
+ * 2. 其次检查是否存在对应的默认文件夹
+ * 3. 最后使用当前目录
+ */
+function getComponentTargetDir(frameworkName: string, projectName: string): string {
+  const config = FRAMEWORK_PATH_CONFIG[frameworkName]
+  if (!config) {
+    return projectName
+  }
+
+  const pkgPath = path.join(cwd, 'package.json')
+
+  // 检查当前目录是否有 package.json
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
+      // 检查是否有对应的配置字段
+      if (pkg[config.pkgField] && typeof pkg[config.pkgField] === 'string') {
+        return path.join(pkg[config.pkgField], projectName)
+      }
+    } catch {
+      // 解析失败，继续检查其他条件
+    }
+  }
+
+  // 检查是否存在对应的默认文件夹
+  const defaultDir = path.join(cwd, config.defaultDir)
+  if (fs.existsSync(defaultDir) && fs.statSync(defaultDir).isDirectory()) {
+    return path.join(config.defaultDir, projectName)
+  }
+
+  // 默认使用当前目录
+  return projectName
+}
 
 async function init() {
   const argTargetDir = formatTargetDir(argv._[0])
@@ -237,20 +300,7 @@ async function init() {
               : `Target directory "${targetDir}"`) +
             ` is not empty. Please choose how to proceed:`,
           initial: 0,
-          choices: [
-            {
-              title: 'Remove existing files and continue',
-              value: 'yes',
-            },
-            {
-              title: 'Cancel operation',
-              value: 'no',
-            },
-            {
-              title: 'Ignore files and continue',
-              value: 'ignore',
-            },
-          ],
+          choices: OVERWRITE_CHOICES,
         },
         {
           type: (_, { overwrite }: { overwrite?: string }) => {
@@ -276,16 +326,48 @@ async function init() {
   // user choice associated with prompts
   const { framework, overwrite, variant } = result
 
+  // determine template
+  let template: string = variant || framework?.name || argTemplate
+
+  // 如果是组件/数据源/插件类型，调整目标目录
+  let finalOverwrite = overwrite
+  if (framework && FRAMEWORK_PATH_CONFIG[framework.name]) {
+    const componentTargetDir = getComponentTargetDir(framework.name, targetDir)
+    if (componentTargetDir !== targetDir) {
+      console.log(`\n目标目录为: ${componentTargetDir}`)
+      targetDir = componentTargetDir
+    }
+
+    // 检查调整后的目录是否存在且非空，需要再次询问
+    const adjustedRoot = path.join(cwd, targetDir)
+    if (fs.existsSync(adjustedRoot) && !isEmpty(adjustedRoot)) {
+      const { overwriteAdjusted } = await prompts({
+        type: 'select',
+        name: 'overwriteAdjusted',
+        message: `Target directory "${targetDir}" is not empty. Please choose how to proceed:`,
+        initial: 0,
+        choices: OVERWRITE_CHOICES,
+      }, {
+        onCancel: () => {
+          throw new Error(red('✖') + ' Operation cancelled')
+        },
+      })
+
+      if (overwriteAdjusted === 'no') {
+        console.log(red('✖') + ' Operation cancelled')
+        return
+      }
+      finalOverwrite = overwriteAdjusted
+    }
+  }
+
   const root = path.join(cwd, targetDir)
 
-  if (overwrite === 'yes') {
+  if (finalOverwrite === 'yes') {
     emptyDir(root)
   } else if (!fs.existsSync(root)) {
     fs.mkdirSync(root, { recursive: true })
   }
-
-  // determine template
-  let template: string = variant || framework?.name || argTemplate
   let isReactSwc = false
   if (template.includes('-swc')) {
     isReactSwc = true
@@ -374,6 +456,14 @@ async function init() {
 
   const cdProjectName = path.relative(cwd, root)
   console.log(`\nDone. Now run:\n`)
+
+  // 组件库、组件、数据源、插件不需要提示 install 和 dev
+  const isLibType = framework?.name === 'components' || FRAMEWORK_PATH_CONFIG[framework?.name ?? '']
+  if (isLibType) {
+    console.log()
+    return
+  }
+
   if (root !== cwd) {
     console.log(
       `  cd ${
@@ -381,13 +471,22 @@ async function init() {
       }`,
     )
   }
+  const isRuntime = framework?.name === 'runtime'
   switch (pkgManager) {
     case 'yarn':
       console.log('  yarn')
+      if (isRuntime) {
+        console.log('  yarn tmagic')
+        console.log('  yarn build:libs')
+      }
       console.log('  yarn dev')
       break
     default:
       console.log(`  ${pkgManager} install`)
+      if (isRuntime) {
+        console.log(`  ${pkgManager} run tmagic`)
+        console.log(`  ${pkgManager} run build:libs`)
+      }
       console.log(`  ${pkgManager} run dev`)
       break
   }

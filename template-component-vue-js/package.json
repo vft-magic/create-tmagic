@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "name": "component-vue",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "files": [
     "src"
   ],
@@ -12,12 +12,6 @@
   "peerDependencies": {
     "@tmagic/core": ">=1.7.0",
     "@tmagic/vue-runtime-help": ">=2.0.0",
-    "typescript": "*",
     "vue": ">=3.5.0"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   }
 }
