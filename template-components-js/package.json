@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
-  "tmagicComponentsPath": "./components",
-  "tmagicDataSourcesPath": "./dataSources",
-  "tmagicPluginsPath": "./plugins"
+  "createTmagic": {
+    "componentsPath": "./components",
+    "dataSourcesPath": "./dataSources",
+    "pluginsPath": "./plugins"
+  }
 }

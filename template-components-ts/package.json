@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
-  "tmagicComponentsPath": "./components",
-  "tmagicDataSourcesPath": "./dataSources",
-  "tmagicPluginsPath": "./plugins",
+  "createTmagic": {
+    "componentsPath": "./components",
+    "dataSourcesPath": "./dataSources",
+    "pluginsPath": "./plugins"
+  },
   "devDependencies": {
     "@vue/tsconfig": "^0.8.1",
     "typescript": "^5.9.3"

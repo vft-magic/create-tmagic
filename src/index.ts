@@ -181,14 +181,32 @@ const OVERWRITE_CHOICES = [
 
 // framework 类型对应的 package.json 配置字段和默认文件夹
 const FRAMEWORK_PATH_CONFIG: Record<string, { pkgField: string; defaultDir: string }> = {
-  'component': { pkgField: 'tmagicComponentsPath', defaultDir: 'components' },
-  'data-source': { pkgField: 'tmagicDataSourcesPath', defaultDir: 'data-sources' },
-  'plugin': { pkgField: 'tmagicPluginsPath', defaultDir: 'plugins' },
+  'component': { pkgField: 'componentsPath', defaultDir: 'components' },
+  'data-source': { pkgField: 'dataSourcesPath', defaultDir: 'data-sources' },
+  'plugin': { pkgField: 'pluginsPath', defaultDir: 'plugins' },
+}
+
+/**
+ * 获取当前目录 package.json 中的 createTmagic 配置
+ */
+function getCreateTmagicConfig(): Record<string, unknown> | undefined {
+  const pkgPath = path.join(cwd, 'package.json')
+
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
+      return pkg.createTmagic
+    } catch {
+      // 解析失败，返回 undefined
+    }
+  }
+
+  return undefined
 }
 
 /**
  * 获取组件/数据源/插件的目标目录
- * 1. 优先使用 package.json 中的对应配置字段
+ * 1. 优先使用 package.json 中 createTmagic 的对应配置字段
  * 2. 其次检查是否存在对应的默认文件夹
  * 3. 最后使用当前目录
  */
@@ -198,19 +216,9 @@ function getComponentTargetDir(frameworkName: string, projectName: string): stri
     return projectName
   }
 
-  const pkgPath = path.join(cwd, 'package.json')
-
-  // 检查当前目录是否有 package.json
-  if (fs.existsSync(pkgPath)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
-      // 检查是否有对应的配置字段
-      if (pkg[config.pkgField] && typeof pkg[config.pkgField] === 'string') {
-        return path.join(pkg[config.pkgField], projectName)
-      }
-    } catch {
-      // 解析失败，继续检查其他条件
-    }
+  const createTmagicConfig = getCreateTmagicConfig()
+  if (typeof createTmagicConfig?.[config.pkgField] === 'string') {
+    return path.join(createTmagicConfig[config.pkgField] as string, projectName)
   }
 
   // 检查是否存在对应的默认文件夹
@@ -221,6 +229,21 @@ function getComponentTargetDir(frameworkName: string, projectName: string): stri
 
   // 默认使用当前目录
   return projectName
+}
+
+/**
+ * 获取组件库中配置的 npm scope name
+ */
+function getNpmScopeName(): string | undefined {
+  const createTmagicConfig = getCreateTmagicConfig()
+  const scopeName = createTmagicConfig?.npmScopeName
+
+  if (typeof scopeName === 'string' && scopeName) {
+    // 确保 scope name 以 @ 开头
+    return scopeName.startsWith('@') ? scopeName : `@${scopeName}`
+  }
+
+  return undefined
 }
 
 async function init() {
@@ -234,8 +257,11 @@ async function init() {
   }
 
   let targetDir = argTargetDir || defaultTargetDir
-  const getProjectName = () =>
-    targetDir === '.' ? path.basename(path.resolve()) : targetDir
+  const getProjectName = (useOriginal = false) => {
+    const dir = useOriginal ? (originalProjectName ?? targetDir) : targetDir
+    return dir === '.' ? path.basename(path.resolve()) : dir
+  }
+  let originalProjectName: string | undefined
 
   let result: prompts.Answers<
     'projectName' | 'overwrite' | 'framework' | 'variant'
@@ -331,6 +357,7 @@ async function init() {
 
   // 如果是组件/数据源/插件类型，调整目标目录
   let finalOverwrite = overwrite
+  originalProjectName = targetDir // 保存原始项目名用于 package.json
   if (framework && FRAMEWORK_PATH_CONFIG[framework.name]) {
     const componentTargetDir = getComponentTargetDir(framework.name, targetDir)
     if (componentTargetDir !== targetDir) {
@@ -446,7 +473,18 @@ async function init() {
     fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
   )
 
-  pkg.name = getProjectName()
+  // 组件/数据源/插件类型使用原始项目名，其他类型使用调整后的目录名
+  const isLibType = Boolean(FRAMEWORK_PATH_CONFIG[framework?.name ?? ''])
+  let pkgName = getProjectName(isLibType)
+
+  // 如果是组件/数据源/插件类型，检查是否有配置 npmScopeName
+  if (isLibType) {
+    const npmScopeName = getNpmScopeName()
+    if (npmScopeName) {
+      pkgName = `${npmScopeName}/${pkgName}`
+    }
+  }
+  pkg.name = pkgName
 
   write('package.json', JSON.stringify(pkg, null, 2) + '\n')
 
@@ -458,7 +496,6 @@ async function init() {
   console.log(`\nDone. Now run:\n`)
 
   // 组件库、组件、数据源、插件不需要提示 install 和 dev
-  const isLibType = framework?.name === 'components' || FRAMEWORK_PATH_CONFIG[framework?.name ?? '']
   if (isLibType) {
     console.log()
     return
