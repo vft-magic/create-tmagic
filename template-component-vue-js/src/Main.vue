@@ -10,10 +10,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  iteratorIndex: Number,
+  iteratorIndex: Array,
   iteratorContainerId: Array,
   containerIndex: Number,
-  pageFragmentContainerId?: Number,
+  pageFragmentContainerId: Number,
   model: Object,
   disabled: Boolean,
 });
