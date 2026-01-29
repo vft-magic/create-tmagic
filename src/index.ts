@@ -69,6 +69,28 @@ type FrameworkVariant = {
 
 const FRAMEWORKS: Framework[] = [
   {
+    name: 'component',
+    display: 'component:组件',
+    color: greenBright,
+    variants: [
+      {
+        name: 'component-vue-ts',
+        display: 'vue组件(TypeScript)',
+        color: blue,
+      },
+      {
+        name: 'component-vue-js',
+        display: 'vue组件(JavaScript)',
+        color: green,
+      },
+      {
+        name: 'component-react-ts',
+        display: 'react组件',
+        color: blue,
+      },
+    ],
+  },
+  {
     name: 'runtime',
     display: 'runtime:运行时（DSL渲染）',
     color: yellow,
@@ -111,28 +133,6 @@ const FRAMEWORKS: Framework[] = [
         name: 'components-js',
         display: 'components-js(JavaScript)',
         color: green,
-      },
-    ],
-  },
-  {
-    name: 'component',
-    display: 'component:组件',
-    color: greenBright,
-    variants: [
-      {
-        name: 'component-vue-ts',
-        display: 'vue组件(TypeScript)',
-        color: blue,
-      },
-      {
-        name: 'component-vue-js',
-        display: 'vue组件(JavaScript)',
-        color: green,
-      },
-      {
-        name: 'component-react-ts',
-        display: 'react组件',
-        color: blue,
       },
     ],
   },
